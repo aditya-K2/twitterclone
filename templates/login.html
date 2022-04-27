@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+</head>
+<body>
+	<style>
+	#answer{
+		background-color: #5aa5ac;
+		color: white;
+		font-weight: bold;
+	}
+	body {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding-top: 3rem;
+		background-color: black;
+	}
+	.loginForm form{
+		display: flex;
+		flex-direction: column;
+	}
+	.buttons{
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		margin: 0.5rem;
+	}
+
+	.loginForm input{
+		margin: 1rem;
+		padding: 1rem;
+		border-width: 0px;
+		color: white;
+		background-color: #242424;
+		border-radius: 1rem;
+	}
+
+	button {
+		margin: 1rem;
+		border-width: 0px;
+		border-radius: 1rem;
+		padding: 1rem;
+		background-color: #5aa5ac;
+		color: white;
+		font-weight: bold;
+	}
+
+	button:hover{
+		cursor: pointer;
+	}
+
+	</style>
+	<script>
+		function login(){
+			const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+			let data = {user_id : document.getElementById("username").value, password: document.getElementById("pass").value};
+			fetch("http://127.0.0.1:8000/login/", {
+			  method: "POST",
+			  headers : {
+				  'X-CSRFToken' : csrftoken,
+			  },
+			  body: JSON.stringify(data)
+			}).then(res => {
+			  console.log("Promise resolved", res);
+			});
+		};
+		function signin(){
+			const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+			let data = {user_id : document.getElementById("username").value, password: document.getElementById("pass").value};
+			fetch("http://127.0.0.1:8000/signin/", {
+			  method: "POST",
+			  headers : {
+				  'X-CSRFToken' : csrftoken,
+			  },
+			  body: JSON.stringify(data)
+			}).then(res => {
+			  console.log("Promise resolved", res);
+			});
+		};
+	</script>
+	<div class="loginForm">
+		<form action="">
+			{% csrf_token %}
+			<input type="text" placeholder="User Name" id="username">
+			<input type="text" placeholder="Password" id="pass">
+			<div class="buttons">
+				<button class="logBTN" type="button" onclick="login()">
+					Log In
+				</button>
+				<button class="sigBTN" type="button" onclick="signin()">
+					Sign In
+				</button>
+			</div>
+		</form>
+		<div id="answer"></div>
+	</div>
+</body>
+</html>
