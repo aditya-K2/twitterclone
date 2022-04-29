@@ -9,8 +9,7 @@ GET_TIME_LINE_STATEMENT = '''( SELECT user_id, tweet_id, NULL as subtweet_id, tw
                             UNION (( SELECT user_id, tweet_id, NULL as subtweet_id, tweet_body, time_posted FROM Tweets WHERE user_id = "{user_id}" )
                                     UNION ( SELECT user_id, retweet_id, subtweet_id, retweet_body, time_posted FROM Retweets WHERE user_id = "{user_id}" ))
                             ORDER BY time_posted DESC'''
-GET_USER_TIME_LINE = '''( SELECT user_id, tweet_id, NULL as subtweet_id, tweet_body, time_posted FROM Tweets WHERE user_id = "{user_id}" )
-                        UNION ( SELECT user_id, retweet_id, subtweet_id, retweet_body, time_posted FROM Retweets WHERE user_id = "{user_id}" ) ORDER BY time_posted DESC'''
+GET_USER_TIME_LINE = '( SELECT user_id, tweet_id, NULL as subtweet_id, tweet_body, time_posted FROM Tweets WHERE user_id = "{user_id}" ) UNION ( SELECT user_id, retweet_id, subtweet_id, retweet_body, time_posted FROM Retweets WHERE user_id = "{user_id}" ) ORDER BY time_posted DESC'
 GET_TWEET_TIME_LINE = 'SELECT * FROM Comments WHERE parent_tweet = "{tweet_id}" ORDER BY time_posted DESC'
 GET_TWEET_STATMENT = '''( SELECT user_id, tweet_id, NULL as subtweet_id, tweet_body, time_posted FROM Tweets WHERE tweet_id = "{tweet_id}" )
                         UNION ( SELECT user_id, retweet_id, subtweet_id, retweet_body, time_posted FROM Retweets WHERE retweet_id = "{tweet_id}" )
@@ -40,6 +39,16 @@ db = mysql.connector.connect(
         user=os.environ["TWITTER_DB_USER"],
         passwd=os.environ["TWITTER_DB_PASSWORD"],
         database=os.environ["TWITTER_DB_NAME"])
+
+def delete_tweet(tweet_id):
+    db.reconnect()
+    cursor = db.cursor(buffered=True)
+    cursor.execute('DELETE FROM Tweets WHERE tweet_id="{tweet_id}"'.format(tweet_id = tweet_id))
+    db.commit()
+    cursor.execute('DELETE FROM Retweets WHERE retweet_id="{tweet_id}" OR subtweet_id="{tweet_id}"'.format(tweet_id = tweet_id))
+    db.commit()
+    cursor.execute('DELETE FROM Comments WHERE comment_id="{tweet_id}" OR parent_tweet="{tweet_id}"'.format(tweet_id = tweet_id))
+    db.commit()
 
 def get_follow_relation(user_id, fo_id):
     db.reconnect()

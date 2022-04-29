@@ -64,7 +64,7 @@
 		.buttonsI:hover{
 			border-radius: 100%;
 		}
-		.bookmark:hover{
+		.delete:hover{
 			background-color: #200914;
 			fill: #92114c;
 		}
@@ -177,6 +177,9 @@
 			box-shadow: 5px 5px 2px black;
 			margin-bottom: 1rem;
 		}
+		.tweet:hover{
+			background-color: #060606;
+		}
 		.userInfo{
 			display: flex;
 			flex-direction: row;
@@ -188,6 +191,9 @@
 		}
 		.displayName{
 			margin-bottom:0.2rem;
+		}
+		.displayName:hover{
+			text-decoration: underline;
 		}
 		.profilePic{
 			border-radius: 100%;
@@ -263,6 +269,7 @@
 			  body: JSON.stringify(data)
 			}).then(res => {
 			  console.log("Promise resolved", res);
+			  window.location.replace("http://127.0.0.1:8000/home")
 			});
 		};
 		function commentOnTweet(){
@@ -276,6 +283,7 @@
 			  body: JSON.stringify(data)
 			}).then(res => {
 			  console.log("Promise resolved", res);
+			  window.location.replace("http://127.0.0.1:8000/tweet/{{ tweet.tweet_id }}")
 			});
 		};
 		function uploadTweet(){
@@ -289,6 +297,7 @@
 			  body: JSON.stringify(data)
 			}).then(res => {
 			  console.log("Promise resolved", res);
+			  window.location.replace("http://127.0.0.1:8000/home/")
 			});
 		};
 	</script>
@@ -303,12 +312,6 @@
 			<div class="colEntry profile">
 				<svg viewBox="0 0 24 24" class="colI profile"><g><path d="M12.225 12.165c-1.356 0-2.872-.15-3.84-1.256-.814-.93-1.077-2.368-.805-4.392.38-2.826 2.116-4.513 4.646-4.513s4.267 1.687 4.646 4.513c.272 2.024.008 3.46-.806 4.392-.97 1.106-2.485 1.255-3.84 1.255zm5.849 9.85H6.376c-.663 0-1.25-.28-1.65-.786-.422-.534-.576-1.27-.41-1.968.834-3.53 4.086-5.997 7.908-5.997s7.074 2.466 7.91 5.997c.164.698.01 1.434-.412 1.967-.4.505-.985.785-1.648.785z"></path></g></svg>
 				<div class="colName">Profile</div>
-			</div>
-		</a>
-		<a href="http://127.0.0.1:8000/bookmarks/">
-			<div class="colEntry bookmarks">
-				<svg viewBox="0 0 12 13" class="colI bookmark"> <path d="M1 11.7247V1.5C1 1.22386 1.22386 1 1.5 1H10.5C10.7761 1 11 1.22386 11 1.5V11.6549C11 12.1183 10.4241 12.3324 10.1214 11.9815L6.54385 7.8344C6.34906 7.60859 6.00118 7.60241 5.79849 7.82116L1.86676 12.0645C1.55773 12.3981 1 12.1794 1 11.7247Z" stroke="white"/> </svg>
-				<div class="colName">Saved</div>
 			</div>
 		</a>
 	</div>

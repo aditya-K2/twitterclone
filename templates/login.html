@@ -65,6 +65,7 @@
 			  body: JSON.stringify(data)
 			}).then(res => {
 			  console.log("Promise resolved", res);
+			  window.location.replace("http://127.0.0.1:8000/home/")
 			});
 		};
 		function signin(){
@@ -78,6 +79,7 @@
 			  body: JSON.stringify(data)
 			}).then(res => {
 			  console.log("Promise resolved", res);
+			  window.location.replace("http://127.0.0.1:8000/home/")
 			});
 		};
 	</script>

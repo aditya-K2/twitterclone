@@ -132,6 +132,19 @@ def follow(request):
     database.follow(body_data["user_id"], body_data["follows"])
     return HttpResponse()
 
+def delete(request, tweet_id):
+    database.delete_tweet(tweet_id)
+    if 'JWT_KEY' in request.COOKIES:
+        try:
+            data = jwt.decode(request.COOKIES["JWT_KEY"], SECRET_JWT, algorithms=["HS256"])
+        except:
+            return render(request, "login.html")
+        context = { "user_id" : data["user_id"],
+                    "posts" : database.get_home_time_line(data["user_id"]),
+                    "upper_bar_title" : "Home"}
+        return render(request, 'home.html', context)
+    else:
+        return render(request, "login.html")
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', home),
@@ -143,5 +156,6 @@ urlpatterns = [
     path('signin/', signin),
     path('retweet/<str:subtweet_id>', retweet_render, name="retweet_render"),
     path('retweet/', retweet, name="retweet"),
-    path('follow/', follow)
+    path('follow/', follow),
+    path('delete/<str:tweet_id>', delete)
 ]+ static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
