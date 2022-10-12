@@ -2,6 +2,8 @@
 
 Django Twitter Clone
 
+![](./media/screen.png)
+
 ## Database Design
 
 ![](./media/dbdesign.png)
