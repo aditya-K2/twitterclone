@@ -1,1 +1,3 @@
 twitterserver/__pycache__/*
+db.sqlite3
+.fuse*
