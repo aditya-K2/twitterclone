@@ -2,12 +2,13 @@ import mysql.connector
 import os
 import uuid
 import bcrypt
+import datetime
 # import json
 
 GET_TIME_LINE_STATEMENT = '''( SELECT user_id, tweet_id, NULL as subtweet_id, tweet_body, time_posted FROM Tweets WHERE user_id in ( SELECT follows FROM followers WHERE user_id = "{user_id}" ))
                             UNION ( SELECT user_id, retweet_id, subtweet_id, retweet_body, time_posted FROM Retweets WHERE user_id in ( SELECT follows FROM followers WHERE user_id = "{user_id}" ))
-                            UNION (( SELECT user_id, tweet_id, NULL as subtweet_id, tweet_body, time_posted FROM Tweets WHERE user_id = "{user_id}" )
-                                    UNION ( SELECT user_id, retweet_id, subtweet_id, retweet_body, time_posted FROM Retweets WHERE user_id = "{user_id}" ))
+                            UNION ( SELECT user_id, tweet_id, NULL as subtweet_id, tweet_body, time_posted FROM Tweets WHERE user_id = "{user_id}" )
+                            UNION ( SELECT user_id, retweet_id, subtweet_id, retweet_body, time_posted FROM Retweets WHERE user_id = "{user_id}" )
                             ORDER BY time_posted DESC'''
 GET_USER_TIME_LINE = '( SELECT user_id, tweet_id, NULL as subtweet_id, tweet_body, time_posted FROM Tweets WHERE user_id = "{user_id}" ) UNION ( SELECT user_id, retweet_id, subtweet_id, retweet_body, time_posted FROM Retweets WHERE user_id = "{user_id}" ) ORDER BY time_posted DESC'
 GET_TWEET_TIME_LINE = 'SELECT * FROM Comments WHERE parent_tweet = "{tweet_id}" ORDER BY time_posted DESC'
@@ -39,6 +40,9 @@ db = mysql.connector.connect(
         user=os.environ["TWITTER_DB_USER"],
         passwd=os.environ["TWITTER_DB_PASSWORD"],
         database=os.environ["TWITTER_DB_NAME"])
+
+def get_time(value):
+    return (datetime.datetime.min + value).time()
 
 def delete_tweet(tweet_id):
     db.reconnect()
@@ -142,7 +146,7 @@ def get_tweet(tweet_id: str):
                 "user_id" : res[0],
                 "tweet_id" : res[1],
                 "tweet_body" : res[3],
-                "time_posted" : res[4].strftime("%m/%d/%Y, %H:%M:%S")
+                "time_posted" : get_time(res[4]).strftime("%m/%d/%Y, %H:%M:%S")
             }
         else:
             return {
@@ -150,7 +154,7 @@ def get_tweet(tweet_id: str):
                 "tweet_id" : res[1],
                 "subtweet_id" : get_single_tweet(res[2]),
                 "tweet_body" : res[3],
-                "time_posted" : res[4].strftime("%m/%d/%Y, %H:%M:%S")
+                "time_posted" : get_time(res[4]).strftime("%m/%d/%Y, %H:%M:%S")
             }
 
     else:
@@ -168,7 +172,7 @@ def get_single_tweet(tweet_id):
             "user_id" : res[0],
             "tweet_id" : res[1],
             "tweet_body" : res[2],
-            "time_posted" : res[3].strftime("%m/%d/%Y, %H:%M:%S")
+            "time_posted" : get_time(res[3]).strftime("%m/%d/%Y, %H:%M:%S")
         }
     else:
         return NO_TWEET_ERROR
@@ -188,7 +192,7 @@ def get_user_time_line(user_id : str):
             if st != NO_TWEET_ERROR:
                 tweet["subtweet_id"] = st
         tweet["tweet_body"] = tuple[3]
-        tweet["time_posted"] = tuple[4].strftime("%m/%d/%Y, %H:%M:%S")
+        tweet["time_posted"] = get_time(tuple[4]).strftime("%m/%d/%Y, %H:%M:%S")
         payload.append(tweet)
 
     return payload
@@ -208,7 +212,7 @@ def get_home_time_line(user_id : str):
             if st != NO_TWEET_ERROR:
                 tweet["subtweet_id"] = st
         tweet["tweet_body"] = tuple[3]
-        tweet["time_posted"] = tuple[4].strftime("%m/%d/%Y, %H:%M:%S")
+        tweet["time_posted"] = get_time(tuple[4]).strftime("%m/%d/%Y, %H:%M:%S")
         payload.append(tweet)
 
     return payload
@@ -230,7 +234,7 @@ def get_tweet_time_line(tweet_id: str):
         comment["parent_tweet_id"] = tuple[1]
         comment["user_id"] = tuple[2]
         comment["comment_body"] = tuple[3]
-        comment["time_posted"] = tuple[4].strftime("%m/%d/%Y, %H:%M:%S")
+        comment["time_posted"] = get_time(tuple[4]).strftime("%m/%d/%Y, %H:%M:%S")
         payload["comments"].append(comment)
 
     print(payload)
