@@ -261,7 +261,7 @@
 		function retweet(){
 			  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 					let data = {user_id : "{{ user_id }}" , retweet_body: document.getElementById("tweetIn").value, subtweet_id: "{{ subtweet_id }}" };
-			  fetch("http://127.0.0.1:8000/retweet/", {
+			  fetch(window.location.origin + "/retweet/", {
 			  method: "POST",
 			  headers : {
 				  'X-CSRFToken' : csrftoken,
@@ -269,13 +269,13 @@
 			  body: JSON.stringify(data)
 			}).then(res => {
 			  console.log("Promise resolved", res);
-			  window.location.replace("http://127.0.0.1:8000/home")
+			  window.location.replace(window.location.origin + "/home")
 			});
 		};
 		function commentOnTweet(){
 			const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 					let data = {user_id : "{{ user_id }}" , comment_body: document.getElementById("tweetIn").value, parent_tweet: "{{ tweet.tweet_id }}" };
-			fetch("http://127.0.0.1:8000/comment_on_tweet/", {
+			fetch(window.location.origin + "/comment_on_tweet/", {
 			  method: "POST",
 			  headers : {
 				  'X-CSRFToken' : csrftoken,
@@ -283,13 +283,13 @@
 			  body: JSON.stringify(data)
 			}).then(res => {
 			  console.log("Promise resolved", res);
-			  window.location.replace("http://127.0.0.1:8000/tweet/{{ tweet.tweet_id }}")
+			  window.location.replace(window.location.origin + "/tweet/{{ tweet.tweet_id }}")
 			});
 		};
 		function uploadTweet(){
 			const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 			let data = {user_id : "{{ user_id }}" , tweet_body: document.getElementById("tweetIn").value};
-			fetch("http://127.0.0.1:8000/create_tweet/", {
+			fetch(window.location.origin + "/create_tweet/", {
 			  method: "POST",
 			  headers : {
 				  'X-CSRFToken' : csrftoken,
@@ -297,18 +297,18 @@
 			  body: JSON.stringify(data)
 			}).then(res => {
 			  console.log("Promise resolved", res);
-			  window.location.replace("http://127.0.0.1:8000/home/")
+			  window.location.replace(window.location.origin + "/home")
 			});
 		};
 	</script>
 	<div class="leftC">
-		<a href="http://127.0.0.1:8000/home/">
+		<a href="/home">
 			<div class="colEntry home">
 				<svg viewBox="0 0 24 24" class="colI home"><g><path d="M22.46 7.57L12.357 2.115c-.223-.12-.49-.12-.713 0L1.543 7.57c-.364.197-.5.652-.303 1.017.135.25.394.393.66.393.12 0 .243-.03.356-.09l.815-.44L4.7 19.963c.214 1.215 1.308 2.062 2.658 2.062h9.282c1.352 0 2.445-.848 2.663-2.087l1.626-11.49.818.442c.364.193.82.06 1.017-.304.196-.363.06-.818-.304-1.016zm-4.638 12.133c-.107.606-.703.822-1.18.822H7.36c-.48 0-1.075-.216-1.178-.798L4.48 7.69 12 3.628l7.522 4.06-1.7 12.015z"></path><path d="M8.22 12.184c0 2.084 1.695 3.78 3.78 3.78s3.78-1.696 3.78-3.78-1.695-3.78-3.78-3.78-3.78 1.696-3.78 3.78zm6.06 0c0 1.258-1.022 2.28-2.28 2.28s-2.28-1.022-2.28-2.28 1.022-2.28 2.28-2.28 2.28 1.022 2.28 2.28z"></path></g></svg>
 				<div class="colName">Home</div>
 			</div>
 		</a>
-		<a href="http://127.0.0.1:8000/user/{{ user_id }}">
+		<a href="/user/{{ user_id }}">
 			<div class="colEntry profile">
 				<svg viewBox="0 0 24 24" class="colI profile"><g><path d="M12.225 12.165c-1.356 0-2.872-.15-3.84-1.256-.814-.93-1.077-2.368-.805-4.392.38-2.826 2.116-4.513 4.646-4.513s4.267 1.687 4.646 4.513c.272 2.024.008 3.46-.806 4.392-.97 1.106-2.485 1.255-3.84 1.255zm5.849 9.85H6.376c-.663 0-1.25-.28-1.65-.786-.422-.534-.576-1.27-.41-1.968.834-3.53 4.086-5.997 7.908-5.997s7.074 2.466 7.91 5.997c.164.698.01 1.434-.412 1.967-.4.505-.985.785-1.648.785z"></path></g></svg>
 				<div class="colName">Profile</div>

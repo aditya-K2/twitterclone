@@ -57,7 +57,9 @@
 		function login(){
 			const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 			let data = {user_id : document.getElementById("username").value, password: document.getElementById("pass").value};
-			fetch("http://127.0.0.1:8000/login/", {
+			let url = window.location.href
+			url = url.replace("/vlogin", "/login")
+			fetch(url, {
 			  method: "POST",
 			  headers : {
 				  'X-CSRFToken' : csrftoken,
@@ -65,13 +67,16 @@
 			  body: JSON.stringify(data)
 			}).then(res => {
 			  console.log("Promise resolved", res);
-			  window.location.replace("http://127.0.0.1:8000/home/")
+			  url = url.replace("/login", "/home")
+			  window.location.replace(url)
 			});
 		};
 		function signin(){
 			const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 			let data = {user_id : document.getElementById("username").value, password: document.getElementById("pass").value};
-			fetch("http://127.0.0.1:8000/signin/", {
+			let url = window.location.href
+			url = url.replace("/vlogin", "/signin")
+			fetch(url, {
 			  method: "POST",
 			  headers : {
 				  'X-CSRFToken' : csrftoken,
@@ -79,15 +84,16 @@
 			  body: JSON.stringify(data)
 			}).then(res => {
 			  console.log("Promise resolved", res);
-			  window.location.replace("http://127.0.0.1:8000/home/")
+			  url = url.replace("/signin", "/home")
+			  window.location.replace(url)
 			});
 		};
 	</script>
 	<div class="loginForm">
 		<form action="">
 			{% csrf_token %}
-			<input type="text" placeholder="User Name" id="username">
-			<input type="text" placeholder="Password" id="pass">
+			<input type="text" placeholder="User Name" id="username" required>
+			<input type="password" placeholder="Password" id="pass" required>
 			<div class="buttons">
 				<button class="logBTN" type="button" onclick="login()">
 					Log In

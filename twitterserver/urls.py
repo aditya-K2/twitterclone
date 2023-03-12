@@ -16,7 +16,7 @@ Including another URLconf
 import json
 from django.contrib import admin
 from django.urls import path
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.conf import settings
 from django.conf.urls.static import static
 from django.http import HttpResponse
@@ -31,20 +31,20 @@ def home(request):
         try:
             data = jwt.decode(request.COOKIES["JWT_KEY"], SECRET_JWT, algorithms=["HS256"])
         except:
-            return render(request, "login.html")
+            return redirect('/vlogin')
         context = { "user_id" : data["user_id"],
                     "posts" : database.get_home_time_line(data["user_id"]),
                     "upper_bar_title" : "Home"}
         return render(request, 'home.html', context)
     else:
-        return render(request, "login.html")
+        return redirect('/vlogin')
 
 def user(request, user_id):
     if 'JWT_KEY' in request.COOKIES:
         try:
             data = jwt.decode(request.COOKIES["JWT_KEY"], SECRET_JWT, algorithms=["HS256"])
         except:
-            return render(request, "login.html")
+            return redirect('/vlogin')
         context = { "user_id" : data["user_id"],
                     "posts" : database.get_user_time_line(user_id),
                     "upper_bar_title" : user_id}
@@ -54,7 +54,7 @@ def user(request, user_id):
             context["followstatus"] = database.get_follow_relation(data["user_id"], user_id)
         return render(request, 'home.html', context)
     else:
-        return render(request, "login.html")
+        return redirect('/vlogin')
 
 def create_tweet(request):
     body_unicode = request.body.decode('utf-8')
@@ -67,7 +67,7 @@ def tweet(request, tweet_id):
         try:
             data = jwt.decode(request.COOKIES["JWT_KEY"], SECRET_JWT, algorithms=["HS256"])
         except:
-            return render(request, "login.html")
+            return redirect('/vlogin')
         result = database.get_tweet_time_line(tweet_id)
         context = { "user_id" : data["user_id"],
                     "comments" : ( result["comments"] if "comments" in result else []),
@@ -75,20 +75,20 @@ def tweet(request, tweet_id):
                     "upper_bar_title" : 'Tweet'}
         return render(request, 'tweet.html', context)
     else:
-        return render(request, "login.html")
+        return redirect('/vlogin')
 
 def retweet_render(request, subtweet_id):
     if 'JWT_KEY' in request.COOKIES:
         try:
             data = jwt.decode(request.COOKIES["JWT_KEY"], SECRET_JWT, algorithms=["HS256"])
         except:
-            return render(request, "login.html")
+            return redirect('/vlogin')
         context = { "user_id" : data["user_id"],
                     "subtweet_id" : subtweet_id,
                     "upper_bar_title" : 'Retweet'}
         return render(request, 'retweet.html', context)
     else:
-        return render(request, "login.html")
+        return redirect('/vlogin')
 
 def retweet(request):
     body_unicode = request.body.decode('utf-8')
@@ -138,14 +138,30 @@ def delete(request, tweet_id):
         try:
             data = jwt.decode(request.COOKIES["JWT_KEY"], SECRET_JWT, algorithms=["HS256"])
         except:
-            return render(request, "login.html")
+            return redirect('/vlogin')
         context = { "user_id" : data["user_id"],
                     "posts" : database.get_home_time_line(data["user_id"]),
                     "upper_bar_title" : "Home"}
         return render(request, 'home.html', context)
     else:
-        return render(request, "login.html")
+        return redirect('/vlogin')
+
+def vlogin(request):
+    return render(request, 'login.html')
+
+def slash(request):
+    if 'JWT_KEY' in request.COOKIES:
+        try:
+            jwt.decode(request.COOKIES["JWT_KEY"], SECRET_JWT, algorithms=["HS256"])
+        except:
+            return redirect('/vlogin')
+        return redirect('/home')
+    else:
+        return redirect('/vlogin')
+
+
 urlpatterns = [
+    path('', slash),
     path('admin/', admin.site.urls),
     path('home/', home),
     path('user/<str:user_id>', user, name="user_timeline"),
@@ -153,6 +169,7 @@ urlpatterns = [
     path('tweet/<str:tweet_id>', tweet, name="tweet_timeline"),
     path('comment_on_tweet/', comment_on_tweet),
     path('login/', login),
+    path('vlogin/', vlogin),
     path('signin/', signin),
     path('retweet/<str:subtweet_id>', retweet_render, name="retweet_render"),
     path('retweet/', retweet, name="retweet"),
