@@ -48,6 +48,7 @@ def user(request, user_id):
         context = { "user_id" : data["user_id"],
                     "posts" : database.get_user_time_line(user_id),
                     "upper_bar_title" : user_id}
+        if not database.user_exists(user_id) : return render(request, "error.html")
         if data["user_id"] != user_id:
             context["notself"] = "True"
             context["nuser"] = user_id

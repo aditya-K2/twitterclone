@@ -100,6 +100,13 @@ def check_user(user_id, passwd):
             else:
                 return False
 
+def user_exists(user_id):
+       db.reconnect()
+       cursor = db.cursor(buffered=True)
+       cursor.execute(GET_USER_STATEMENT.format(user_id = user_id))
+       res = cursor.fetchone()
+       return res != None
+
 def signin(user_id, passwd):
        hash = bcrypt.hashpw(passwd.encode("utf-8"), bcrypt.gensalt())
        db.reconnect()
